@@ -74,6 +74,16 @@ public class PathFinder {
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     // TODO: implement shortest‑path distance
+    // use BFS to find maybe top 5 shortest paths by nodes, then use the compareTo method to look at total weights per path; 
+    Queue<Edge<T>> minQ = new PriorityQueue<>();
+    Map<Vertex<T>, Integer> dists = new HashMap<>();
+    //start PQ at initial node with weight of zero
+    minQ.add(new Edge<>(0, start));
+
+
+    while(!minQ.isEmpty()) {
+
+    }
     return -1;
   }
 }
