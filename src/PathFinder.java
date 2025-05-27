@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class PathFinder {
 
@@ -72,10 +70,60 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    //test this baby out!
+    System.out.println();
+    System.out.println(distance(hcesHouse, finnegansHouse));
+    System.out.println();
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     // TODO: implement shortest‑path distance
-    return -1;
+    // use BFS to find maybe top 5 shortest paths by nodes, then use the compareTo method to look at total weights per path; 
+    Queue<Edge<T>> minQ = new PriorityQueue<>();
+    //'visited' Map
+    Map<Vertex<T>, Integer> dists = new HashMap<>();
+    //to help print out shortest path
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
+
+    //start PQ at initial node with weight of zero
+    minQ.add(new Edge<>(0, start));
+
+
+    while(!minQ.isEmpty()) {
+      Edge<T> current = minQ.poll();
+
+      //if visited, continue
+      if(dists.containsKey(current.endpoint)) {
+        continue;
+      }
+
+      //haven't been here yet, add key/value to Map
+      dists.put(current.endpoint, current.weight);
+      //fill up PQ
+      //loop over adjacent edges
+      for (Edge<T> neighbor : current.endpoint.edges) {
+        if(!dists.containsKey(neighbor.endpoint)) {
+          int newDistance = current.weight + neighbor.weight;
+          Edge<T> cumEdge = new Edge<>(newDistance, neighbor.endpoint);
+          minQ.add(cumEdge);
+
+          if(!prevs.containsKey(neighbor.endpoint)) {
+            prevs.put(neighbor.endpoint, current.endpoint);
+          }
+        }
+      }
+    }
+    //print linked list of shortest path
+    Vertex<T> current = end;
+    List<T> path = new LinkedList<>();
+
+    while(current != null) {
+      path.addFirst(current.data);
+      current = prevs.get(current);
+    }
+    //print out path in reverse
+    System.out.println(path);
+    return dists.get(end);
   }
 }
