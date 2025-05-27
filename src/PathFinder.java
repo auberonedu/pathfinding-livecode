@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -83,6 +84,7 @@ public class PathFinder {
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     Queue<Edge<T>> minQ = new PriorityQueue<>();
     Map<Vertex<T>, Integer> dist = new HashMap<>();
+    Map<Vertex<T>, Vertex<T>> prev = new HashMap<>();
 
     minQ.add(new Edge<>(0, start));
 
@@ -101,9 +103,22 @@ public class PathFinder {
           int newDistance = current.weight + neighbor.weight;
           Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
           minQ.add(newEdge);
+          if(!prev.containsKey(neighbor.endpoint)) {
+            prev.put(neighbor.endpoint, current.endpoint);
+          }
         }
       }
     }
+    Vertex<T> current = end;
+    
+    List<T> path = new LinkedList<>();
+    while(current != null) {
+      // System.out.println(current.data);
+      current = prev.get(current);
+    }
+
+    System.out.println(path);
+
     return dist.get(end);
   }
 }
