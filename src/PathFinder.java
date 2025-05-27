@@ -122,13 +122,16 @@ public class PathFinder {
     // print out starting from end to start
     // use List to order it start to end
     Vertex<T> current = end;
-
+    
+    // List<T> path = new LinkedList<>();
     List<T> path = new ArrayList<>();
 
     while(current != null) {
       // System.out.println(current.data);
 
-      path.add(current.data);
+      // path.addFirst(current.data); for LinkedList
+      
+      path.add(current.data); // for ArrayList
       current = previous.get(current);
     }
     // to show path from start to end
