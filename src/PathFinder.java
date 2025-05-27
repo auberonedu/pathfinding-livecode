@@ -76,6 +76,8 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    System.out.println(distance(hcesHouse, finnegansHouse));
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
@@ -107,6 +109,6 @@ public class PathFinder {
       // TODO: Fill up map
     }
 
-    return ;
+    return dists.get(end);
   }
 }
