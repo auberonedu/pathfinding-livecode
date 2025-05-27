@@ -83,6 +83,7 @@ public class PathFinder {
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     Queue<Edge<T>> minQ = new PriorityQueue<>();
     Map<Vertex<T>, Integer> distances = new HashMap<>();
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
 
     minQ.add(new Edge<>(0, start));
 
@@ -101,10 +102,23 @@ public class PathFinder {
           int newDistance = current.weight + neighbor.weight;
           Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
           minQ.add(newEdge);
+          if (!prevs.containsKey(neighbor.endpoint)) {
+            prevs.put(neighbor.endpoint, current.endpoint);
+          }
         }
       }
     }
 
+    Vertex<T> current = end;
+
+    List<T> path = new ArrayList<>();
+    while (current != null) {
+      path.add(current.data);
+      // System.out.println(current.data);
+      current = prevs.get(current);
+    }
+
+    System.out.println(path.reversed());
     return distances.get(end);
   }
 }
