@@ -119,12 +119,20 @@ public class PathFinder {
       }
     }
 
+    // print out starting from end to start
+    // use List to order it start to end
     Vertex<T> current = end;
 
+    List<T> path = new ArrayList<>();
+
     while(current != null) {
-      System.out.println(current.data);
+      // System.out.println(current.data);
+
+      path.add(current.data);
       current = previous.get(current);
     }
+    // to show path from start to end
+    System.out.println(path.reversed());
     System.out.println();
 
     return distances.get(end);
