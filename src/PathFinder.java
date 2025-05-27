@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class PathFinder {
 
@@ -76,6 +74,35 @@ public class PathFinder {
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     // TODO: implement shortest‑path distance
+    Queue<Edge<T>> minQ = new PriorityQueue<>();
+
+    Map<Vertex<T>, Integer> distances = new HashMap<>();
+
+    minQ.add(new Edge<>(0, start));
+
+    while(!minQ.isEmpty()) {
+      // fill up map
+      Edge<T> current = minQ.poll();
+
+      // if(visited) continue
+      if(distances.containsKey(current.endpoint)) {
+        continue;
+      }
+
+      distances.put(current.endpoint, current.weight);
+
+      for(Edge<T> neighbor : current.endpoint.edges) {
+        if(!distances.containsKey(neighbor.endpoint)) {
+          int newDistance = current.weight + neighbor.weight;
+
+          // new edge
+          Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
+
+          minQ.add(newEdge);
+        }
+      }
+      return distances.get(end);
+    }
     return -1;
   }
 }
