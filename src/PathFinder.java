@@ -1,6 +1,10 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+import com.sun.tools.javac.util.List;
 
 public class PathFinder {
 
@@ -17,7 +21,7 @@ public class PathFinder {
     Vertex<String> finnegansHouse   = new Vertex<>("Finnegan's House");
 
     // 2) Wire up edges (bidirectional)
-    // HCE's House ↔ Phoenix Park (800m)
+    // HCE's House ↔ Phoenix Park (800m) --- the relation between the two locations to show that they share the same distance or weight
     hcesHouse.edges.add(new Edge<>(800, phoenixPark));
     phoenixPark.edges.add(new Edge<>(800, hcesHouse));
 
@@ -72,10 +76,64 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    System.out.println();
+    System.out.println();
+    System.out.println();
+    System.out.println(distance(hcesHouse, finnegansHouse));
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     // TODO: implement shortest‑path distance
-    return -1;
+    // ** Use Dijkstra's algorithm of a Priority Queue
+
+    Queue<Edge<T>> minQ = new PriorityQueue<>(); // a pq where it determines the shortest path after doing the logic from below
+    Map<Vertex<T>, Integer> dist = new HashMap<>(); // keeps track of the shortest distance
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>(); // keeps track of the previous node's information
+
+    minQ.add(new Edge<>(0, start)); // starting point
+
+    while(!minQ.isEmpty()) {
+      // current pointer
+      Edge<T> current = minQ.poll();
+
+      // this (node/path) has been visited inside the HashMap
+      if(dist.containsKey(current.endpoint)) continue;
+
+      // this is marking that (node/path) visited
+      dist.put(current.endpoint, current.weight);
+
+      // Loop through all the neighbors and determine the shortest path
+      for(Edge<T> neighbor : current.endpoint.edges) {
+        if(!dist.containsKey(neighbor.endpoint)) {
+          int newDistance = current.weight + neighbor.weight; // adds up the path's weight 
+          Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint); // save the newDistance's weight into a new Edge variable, with the current neighbor's endpoint
+          minQ.add(newEdge); // then add it to the Priority Queue where the PQ will always add the shortest path on top.
+          if(!prevs.containsKey(neighbor.endpoint)) {
+            prevs.put(neighbor.endpoint, current.endpoint); // this is adding the information from the previous endpoint/node 
+          }
+        }
+      }
+    }
+
+    Vertex<T> current = end;
+
+    //List<T> path = new ArrayList<>(); // alternative way
+    
+    while(current != null) {
+      System.out.println(current.data);
+      current = prevs.get(current);
+    }
+
+    // Alternative Way of doing 
+    // while(current != null) {
+    //   path.add(current.data);
+    //   // System.out.println(current.data);
+    //   current = prevs.get(current);
+    // }
+
+    // System.out.println(path.reversed());
+
+    return dist.get(end);
   }
 }
