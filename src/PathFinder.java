@@ -1,6 +1,12 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class PathFinder {
 
@@ -72,10 +78,57 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    System.out.println(distance(hcesHouse, finnegansHouse));
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
-    // TODO: implement shortest‑path distance
-    return -1;
+    // Priority queue to hold vertices based on distance
+    Queue<Edge<T>> minQ = new PriorityQueue<>();
+
+    // Map to hold the shortest distance to each vertex
+    Map<Vertex<T>, Integer> dists =new HashMap<>();
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>(); // to keep track of the path
+
+    minQ.add(new Edge<>(0, start)); // initial edge with distance 0
+
+    while (!minQ.isEmpty()) {
+      Edge<T> current = minQ.poll();
+
+      // if visited, continue
+      if (dists.containsKey(current.endpoint)) {
+        continue; // Skip if we have already found a shorter path to this vertex
+      }
+
+      dists.put(current.endpoint, current.weight);
+
+      for (Edge<T> neighbor : current.endpoint.edges) {
+        // If the endpoint of the neighbor has not been visited
+        if (!dists.containsKey(neighbor.endpoint)) {
+          // Calculate the new distance
+          int newDistance = current.weight + neighbor.weight;
+
+          Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint); // create a new edge with the updated distance
+          minQ.add(newEdge); // add the new edge to the priority queue
+          if (!prevs.containsKey(neighbor.endpoint)) {
+            prevs.put(neighbor.endpoint, current.endpoint); // update the previous vertex for path reconstruction
+          }
+        }
+      }
+    }
+
+    Vertex<T> current = end;
+
+    List<T> path = new LinkedList<>();
+    // Reconstruct the path from end to start using the prevs map
+    while(current != null) {
+      path.addFirst(current.data);
+      // System.out.println(current.data);
+      current = prevs.get(current);
+    }
+    
+    System.out.println(path);
+
+    return dists.get(end); // return the shortest distance to the end vertex
   }
 }
