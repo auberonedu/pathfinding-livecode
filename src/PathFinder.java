@@ -70,6 +70,9 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    System.out.println();
+    System.out.println(distance(hcesHouse, finnegansHouse));
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
@@ -78,6 +81,8 @@ public class PathFinder {
 
     // holds distance to vertex (operates as visited set)
     Map<Vertex<T>, Integer> distances = new HashMap<>();
+
+    Map<Vertex<T>, Vertex<T>> previous = new HashMap<>();
 
     // start with weight 0 and starting point
     minQ.add(new Edge<>(0, start));
@@ -106,9 +111,22 @@ public class PathFinder {
 
           // add to queue
           minQ.add(newEdge);
+
+          if(!previous.containsKey(neighbor.endpoint)) {
+            previous.put(neighbor.endpoint, current.endpoint);
+          }
         }
       }
     }
+
+    Vertex<T> current = end;
+
+    while(current != null) {
+      System.out.println(current.data);
+      current = previous.get(current);
+    }
+    System.out.println();
+
     return distances.get(end);
   }
 }
