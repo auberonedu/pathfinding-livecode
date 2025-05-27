@@ -84,6 +84,7 @@ public class PathFinder {
     // TODO: implement shortest‑path distance
     Queue<Edge<T>> minQ = new PriorityQueue<>();
     Map<Vertex<T>, Integer> dists = new HashMap<>();
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
 
     minQ.add(new Edge<>(0, start));
 
@@ -100,14 +101,27 @@ public class PathFinder {
       for (Edge<T> neighbor : current.endpoint.edges) {
         if (!dists.containsKey(neighbor.endpoint)) {
           int newDistance = current.weight + neighbor.weight;
+
           Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
+
           minQ.add(newEdge);
+
+          if (!prevs.containsKey(neighbor.endpoint)) {
+            prevs.put(neighbor.endpoint, current.endpoint);
+          }
         }
       }
-
-
-      // TODO: Fill up map
     }
+
+    Vertex<T> current = end;
+    
+    List<T> path = new ArrayList<>();
+    while (current != null) {
+      path.add(current.data);
+      current = prevs.get(current);
+    }
+
+    System.out.println(path.reversed());
 
     return dists.get(end);
   }
