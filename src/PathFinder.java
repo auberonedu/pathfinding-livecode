@@ -116,11 +116,14 @@ public class PathFinder {
     }
     //print linked list of shortest path
     Vertex<T> current = end;
+    List<T> path = new LinkedList<>();
+
     while(current != null) {
-      System.out.println(current.data);
+      path.addFirst(current.data);
       current = prevs.get(current);
     }
-    
+    //print out path in reverse
+    System.out.println(path);
     return dists.get(end);
   }
 }
