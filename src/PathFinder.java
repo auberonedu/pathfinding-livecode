@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class PathFinder {
 
@@ -72,10 +70,74 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    System.out.println();
+    System.out.println(distance(hcesHouse, finnegansHouse));
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
-    // TODO: implement shortest‑path distance
-    return -1;
+    // keep track of edges
+    Queue<Edge<T>> minQ = new PriorityQueue<>();
+
+    // holds distance to vertex (operates as visited set)
+    Map<Vertex<T>, Integer> distances = new HashMap<>();
+
+    Map<Vertex<T>, Vertex<T>> previous = new HashMap<>();
+
+    // start with weight 0 and starting point
+    minQ.add(new Edge<>(0, start));
+
+    // loop through vertices
+    while(!minQ.isEmpty()) {
+      // hold current one
+      Edge<T> current = minQ.poll();
+
+      // if(visited) continue
+      if(distances.containsKey(current.endpoint)) {
+        continue;
+      }
+
+      // store if first time seeing it
+      distances.put(current.endpoint, current.weight);
+
+      // for current vertex, calculate cumulative distance to neighbor and store as new edge
+      for(Edge<T> neighbor : current.endpoint.edges) {
+        if(!distances.containsKey(neighbor.endpoint)) {
+          // cumulative edge
+          int newDistance = current.weight + neighbor.weight;
+
+          // new edge
+          Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
+
+          // add to queue
+          minQ.add(newEdge);
+
+          if(!previous.containsKey(neighbor.endpoint)) {
+            previous.put(neighbor.endpoint, current.endpoint);
+          }
+        }
+      }
+    }
+
+    // print out starting from end to start
+    // use List to order it start to end
+    Vertex<T> current = end;
+    
+    // List<T> path = new LinkedList<>();
+    List<T> path = new ArrayList<>();
+
+    while(current != null) {
+      // System.out.println(current.data);
+
+      // path.addFirst(current.data); for LinkedList
+      
+      path.add(current.data); // for ArrayList
+      current = previous.get(current);
+    }
+    // to show path from start to end
+    System.out.println(path.reversed());
+    System.out.println();
+
+    return distances.get(end);
   }
 }

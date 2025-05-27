@@ -7,6 +7,7 @@ public class Edge<T> implements Comparable<Edge<T>> {
     this.endpoint = endpoint;
   }
 
+  @Override
   public int compareTo(Edge<T> other) {
     return Integer.compare(weight, other.weight);
   }
