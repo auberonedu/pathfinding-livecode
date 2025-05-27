@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class PathFinder {
 
@@ -76,6 +80,33 @@ public class PathFinder {
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     // TODO: implement shortest‑path distance
-    return -1;
+    Queue<Edge<T>> minQ = new PriorityQueue<>();
+    Map<Vertex<T>, Integer> dists = new HashMap<>();
+
+    minQ.add(new Edge<>(0, start));
+
+    while(!minQ.isEmpty()) {
+      Edge<T> current = minQ.poll();
+
+      // if visited, continue
+      if (dists.containsKey(current.endpoint)) {
+        continue;
+      }
+
+      dists.put(current.endpoint, current.weight);
+
+      for (Edge<T> neighbor : current.endpoint.edges) {
+        if (!dists.containsKey(neighbor.endpoint)) {
+          int newDistance = current.weight + neighbor.weight;
+          Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
+          minQ.add(newEdge);
+        }
+      }
+
+
+      // TODO: Fill up map
+    }
+
+    return ;
   }
 }
