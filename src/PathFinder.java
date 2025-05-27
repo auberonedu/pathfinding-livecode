@@ -81,7 +81,11 @@ public class PathFinder {
     // TODO: implement shortest‑path distance
     // use BFS to find maybe top 5 shortest paths by nodes, then use the compareTo method to look at total weights per path; 
     Queue<Edge<T>> minQ = new PriorityQueue<>();
+    //'visited' Map
     Map<Vertex<T>, Integer> dists = new HashMap<>();
+    //to help print out shortest path
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
+
     //start PQ at initial node with weight of zero
     minQ.add(new Edge<>(0, start));
 
@@ -93,6 +97,7 @@ public class PathFinder {
       if(dists.containsKey(current.endpoint)) {
         continue;
       }
+
       //haven't been here yet, add key/value to Map
       dists.put(current.endpoint, current.weight);
       //fill up PQ
@@ -102,9 +107,20 @@ public class PathFinder {
           int newDistance = current.weight + neighbor.weight;
           Edge<T> cumEdge = new Edge<>(newDistance, neighbor.endpoint);
           minQ.add(cumEdge);
+
+          if(!prevs.containsKey(neighbor.endpoint)) {
+            prevs.put(neighbor.endpoint, current.endpoint);
+          }
         }
       }
     }
+    //print linked list of shortest path
+    Vertex<T> current = end;
+    while(current != null) {
+      System.out.println(current.data);
+      current = prevs.get(current);
+    }
+    
     return dists.get(end);
   }
 }
