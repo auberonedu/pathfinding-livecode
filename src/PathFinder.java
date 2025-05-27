@@ -73,15 +73,18 @@ public class PathFinder {
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
-    // TODO: implement shortest‑path distance
+    // keep track of edges
     Queue<Edge<T>> minQ = new PriorityQueue<>();
 
+    // holds distance to vertex (operates as visited set)
     Map<Vertex<T>, Integer> distances = new HashMap<>();
 
+    // start with weight 0 and starting point
     minQ.add(new Edge<>(0, start));
 
+    // loop through vertices
     while(!minQ.isEmpty()) {
-      // fill up map
+      // hold current one
       Edge<T> current = minQ.poll();
 
       // if(visited) continue
@@ -89,20 +92,23 @@ public class PathFinder {
         continue;
       }
 
+      // store if first time seeing it
       distances.put(current.endpoint, current.weight);
 
+      // for current vertex, calculate cumulative distance to neighbor and store as new edge
       for(Edge<T> neighbor : current.endpoint.edges) {
         if(!distances.containsKey(neighbor.endpoint)) {
+          // cumulative edge
           int newDistance = current.weight + neighbor.weight;
 
           // new edge
           Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
 
+          // add to queue
           minQ.add(newEdge);
         }
       }
-      return distances.get(end);
     }
-    return -1;
+    return distances.get(end);
   }
 }
