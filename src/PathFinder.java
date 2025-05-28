@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class PathFinder {
 
@@ -72,10 +76,58 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    System.out.println(distance(hcesHouse, finnegansHouse));
   }
 
+
+  // take in a start and end vertex, return length of shortest possible path
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
-    // TODO: implement shortest‑path distance
-    return -1;
+    // Priority Queue with two pieces of info: distance to vertex and vertex itself (the Edge class does this!)
+    Queue<Edge<T>> minQ = new PriorityQueue<>(); // things I haven't seen
+    Map<Vertex<T>, Integer> dists = new HashMap<>(); // things I have seen
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>(); // This will track what vertex added by what vertex (VERTEX, added by VERTEX)
+
+    minQ.add(new Edge<>(0, start)); // track EDGES
+
+    while (!minQ.isEmpty()){
+      Edge<T> current = minQ.poll(); // THIS PULL OFF THE ONE WITH THE SHORTEST CUMULATIVE DISTANCE
+      
+      // (if visited, continue)
+      // If we've already seen it, it's reachable by a shorter path
+      if (dists.containsKey(current.endpoint)) {
+        continue;
+      }
+
+      // Otherwise, this is the shortest path
+      dists.put(current.endpoint, current.weight);
+
+      // check out neighbors
+      for (Edge<T> neighbor : current.endpoint.edges) {
+        if (!dists.containsKey(neighbor.endpoint)) {
+          int newDistance = current.weight + neighbor.weight;
+          // This edge is not an original "edge" contained in the map, but rather a new edge that represents from starting Vertex to current
+          Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
+          minQ.add(newEdge);
+          if (!prevs.containsKey(neighbor.endpoint)) {
+            prevs.put(neighbor.endpoint, current.endpoint);
+          }
+        }
+      }
+    }
+
+    Vertex<T> current = end;
+    List<T> path = new ArrayList<>();
+
+    while (current != null) {
+      path.add(current.data);
+      current = prevs.get(current); // if key is not in map, return null, which conveniently ends the loop!
+    }
+
+    path = path.reversed();
+
+    System.out.println("The shortest path is: " + path);
+
+    return dists.get(end);
   }
 }
