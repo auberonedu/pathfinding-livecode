@@ -1,6 +1,6 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
+import java.util.LinkedList;
 
 public class PathFinder {
 
@@ -72,10 +72,51 @@ public class PathFinder {
     // Sandymount Strand ↔ Finnegan's House (9000m detour)
     sandymountStrand.edges.add(new Edge<>(9000, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, sandymountStrand));
+
+    System.out.println();
+    System.out.println();
+    System.out.println();
+    System.out.println(distance(hcesHouse, finnegansHouse));
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     // TODO: implement shortest‑path distance
-    return -1;
+
+    Queue<Edge<T>> minQ = new PriorityQueue<>();
+    Map<Vertex<T>, Integer> dists = new HashMap<>();
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
+
+    minQ.add(new Edge<>(0, start));
+
+    while(!minQ.isEmpty()){
+      Edge<T> current = minQ.poll();
+      if(dists.containsKey(current.endpoint)){
+        continue;
+      }
+      dists.put(current.endpoint, current.weight);
+
+      for(Edge<T> neighbor : current.endpoint.edges){
+        if(!dists.containsKey(neighbor.endpoint)){
+          int newDistance = current.weight + neighbor.weight;
+          Edge<T> newEdge = new Edge<>(newDistance, neighbor.endpoint);
+          minQ.add(newEdge);
+          if(!prevs.containsKey(neighbor.endpoint)){
+            prevs.put(neighbor.endpoint, current.endpoint);
+          }
+
+        }
+      }
+    }
+
+    Vertex<T> current = end;
+
+    LinkedList<T> path = new LinkedList<>();
+    while(current != null){
+      path.addFirst(current.data);
+      current = prevs.get(current);
+    }
+    System.out.println(path);
+
+    return dists.get(end);
   }
 }
