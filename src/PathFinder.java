@@ -62,6 +62,7 @@ public class PathFinder {
     // TODO: implement shortest‑path distance
     Map<Vertex<T>, Integer> dists = new HashMap<>();
     Queue<Edge<T>> queue = new PriorityQueue<>();
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
 
     queue.add(new Edge<>(0, start, start));
 
@@ -74,6 +75,7 @@ public class PathFinder {
       }
 
       dists.put(currentVertex, currentEdge.weight);
+      prevs.put(currentVertex, currentEdge.start);
 
       for(Edge<T> neighbor : currentVertex.edges) {
         int cumulativeDist = currentEdge.weight + neighbor.weight;
@@ -85,6 +87,15 @@ public class PathFinder {
     if(!dists.containsKey(end)) {
       throw new IllegalArgumentException("Cannot find a path");
     }
+
+    List<T> path = new LinkedList<>();
+    Vertex<T> current = end;
+    while(current != start) {
+      path.addFirst(current.data);
+      current = prevs.get(current);
+    }
+
+    System.out.println(path);
 
     return dists.get(end);
   }
