@@ -1,4 +1,6 @@
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -64,6 +66,7 @@ public class PathFinder {
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
     Map<Vertex<T>, Integer> distances = new HashMap<>();
     Queue<Edge<T>> queue = new PriorityQueue<>();
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
 
     queue.add(new Edge<>(0, start, start));
 
@@ -74,6 +77,7 @@ public class PathFinder {
       if(distances.containsKey(currentVertex)) continue;
 
       distances.put(currentVertex, currentEdge.weight);
+      prevs.put(currentVertex, currentEdge.start);
 
       for(Edge<T> neighbor : currentVertex.edges) {
         int cumulativeDist = currentEdge.weight + neighbor.weight;
@@ -86,6 +90,16 @@ public class PathFinder {
       throw new IllegalArgumentException("Cannot find a path!");
     }
 
+    List<T> path = new LinkedList<>();
+    Vertex<T> current = end;
+    while(current != start) {
+      path.addFirst(current.data);
+      current = prevs.get(current);
+    }
+
+    path.addFirst(start.data);
+    System.out.println(path);
+    
     return distances.get(end);
   }
 }
