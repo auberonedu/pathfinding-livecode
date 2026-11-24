@@ -1,3 +1,10 @@
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+
 public class PathFinder {
 
   public static void main(String[] args) {
@@ -52,10 +59,57 @@ public class PathFinder {
 
     sandymountStrand.edges.add(new Edge<>(9000, sandymountStrand, finnegansHouse));
     finnegansHouse.edges.add(new Edge<>(9000, finnegansHouse, sandymountStrand));
+
+    System.out.println(distance(finnegansHouse, sandymountStrand));
   }
 
   public static <T> int distance(Vertex<T> start, Vertex<T> end) {
+
+    //key = edge, value = shortest distance to get there
+    Map<Vertex<T>, Integer> dists = new HashMap<>();
+    Queue<Edge<T>> queue = new PriorityQueue<>();
+    Map<Vertex<T>, Vertex<T>> prevs = new HashMap<>();
+    
+    queue.add(new Edge<>(0, start, start));
+
+
+    while (!queue.isEmpty()) {
+      Edge<T> currentEdge = queue.poll();
+      Vertex<T> currentVertex = currentEdge.endpoint;
+
+      if (dists.containsKey(currentVertex)) {
+        continue;
+      }
+
+      dists.put(currentVertex, currentEdge.weight);
+      prevs.put(currentVertex, currentEdge.start);
+
+      for (Edge<T> neighbor : currentVertex.edges){
+        //distance it took to get to the currentEdge, plus the distance to the neighbor 
+        int cumulativeDist = currentEdge.weight + neighbor.weight;
+
+        Edge<T> cumulativeEdge = new Edge<>(cumulativeDist, currentVertex, neighbor.endpoint);
+
+        queue.add(cumulativeEdge);
+      }
+    }
+
+    if (!dists.containsKey(end)) {
+      throw new IllegalArgumentException("Cannot find a path");
+    }
+
+    List<T> path = new LinkedList<>();
+
+    Vertex<T> current = end;
+    while (current != start ) {
+      path.addFirst(current.data);
+      current = prevs.get(current);
+    }
+
+    System.out.println(path);
+
+
     // TODO: implement shortest‑path distance
-    return -1;
+    return dists.get(end);
   }
 }
